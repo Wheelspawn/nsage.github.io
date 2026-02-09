@@ -4,3 +4,9 @@ email: nsage@protonmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   This is not meant to be seen.
 baseurl: ""
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+github_username:  nsage
+# Build settings
+theme: minima
+plugins:
+  - jekyll-feed
