@@ -6,7 +6,7 @@ var stage2 = acgraph.create('scrollDiv2');
 
 window.innerHeight = window.innerHeight * 0.55;
 stage.resize(window.innerWidth*0.9, window.innerHeight*0.35);
-stage2.resize(window.innerWidth*0.9, window.innerHeight*0.5);
+stage2.resize(window.innerWidth*0.9, window.innerHeight*0.75);
 
 scaling_const = 1;
 
@@ -175,8 +175,9 @@ var before_init = acgraph.image('before_init.png', 10, 10, 550, 257);
 var at_init = acgraph.image('at_init.png',  10, 10, 550, 257);
 var read_frame = acgraph.image('read_frame.png',  10, 10, 550, 257);
 var stop = acgraph.image('stop.png', 10, 10, 550, 257);
+var release = acgraph.image('stop.png', 10, 10, 550, 257);
 
-var images = [before_init, at_init, read_frame, stop, stop];
+var images = [before_init, at_init, read_frame, stop, release];
 
 const RibosomeState = Object.freeze({
   BEFORE_START_CODON: 0,
@@ -285,7 +286,8 @@ class Ribosome {
       // set the state of the ribosome relative to the start and stop codons
       this.states.pop();
       this.state = this.states[this.states.length-1];
-      console.log("reversed state: ", this.state)
+      console.log("reversed state: ", this.state);
+      setImages(this.state);
       // this.setState();
     }
   }
