@@ -2,8 +2,11 @@
 
 // stage
 var stage = acgraph.create('scrollDiv');
-window.innerHeight = window.innerHeight * 0.9
-stage.resize(window.innerWidth*0.9, window.innerHeight*0.9);
+var stage2 = acgraph.create('scrollDiv2');
+
+window.innerHeight = window.innerHeight * 0.9;
+stage.resize(window.innerWidth*0.9, window.innerHeight*0.45);
+stage2.resize(window.innerWidth*0.9, window.innerHeight*0.45);
 
 // var chart = anychart.column();
 // chart.container(stage.layer()).draw();
@@ -158,10 +161,12 @@ var su_small = acgraph.vector.primitives.roundedRect(stage, rect2, 6);
 su_large.fill("#FFE2DE");
 su_small.fill("#FFE2DE");
 
-var before_init = acgraph.image('before_init.png', x,y+box_size_y*3,box_size_x*11,box_size_y*5);
-var at_init = acgraph.image('at_init.png', x,y+box_size_y*3,box_size_x*11,box_size_y*5);
-var read_frame = acgraph.image('read_frame.png', x,y+box_size_y*3,box_size_x*11,box_size_y*5);
-var stop = acgraph.image('stop.png', x,y+box_size_y*3,box_size_x*11,box_size_y*5);
+var before_init = acgraph.image('before_init.png', 10, 10, 550, 257);
+var at_init = acgraph.image('at_init.png',  10, 10, 550, 257);
+var read_frame = acgraph.image('read_frame.png',  10, 10, 550, 257);
+var stop = acgraph.image('stop.png', 10, 10, 550, 257);
+
+var images = [before_init, at_init, read_frame, stop, stop];
 
 const RibosomeState = Object.freeze({
   BEFORE_START_CODON: 0,
@@ -170,23 +175,6 @@ const RibosomeState = Object.freeze({
   AT_STOP_CODON: 3,
   AFTER_STOP_CODON: 4
 });
-
-function setImages(state)
-{
-  images = [before_init, at_init, read_frame, stop, stop];
-
-  for (let i = 0; i < images.length; i++) 
-  {
-    if (i == state)
-    {
-      images[i].parent(stage);
-    }
-    else
-    {
-      images[i].parent(null);
-    }
-  }
-}
 
 class Ribosome {
   constructor()
@@ -451,24 +439,6 @@ function replaceLigase()
 
 function createSequence(text)
 {
-  const re = RegExp("(AUG){1}([A|C|U|G]{3})*(UAG|UAA|UGA){1}");
-  rnaInput = document.getElementById("rnaInput").value;
-
-  match = rnaInput.match(re);
-  if (match != null) {
-    const indexOfFirst = rnaInput.indexOf(match);
-    var regex = acgraph.text(65, 580).htmlText(rnaInput.slice(0,indexOfFirst-1)
-                                               +"<b>"+match[0]
-                                               +"</b>"+rnaInput.slice(indexOfFirst+match[0].length,-1));
-  }
-  else {
-    var regex = acgraph.text(65, 580).htmlText(rnaInput);
-  }
-
-  regex.fontSize("24px");
-  regex_bounding_box = stage.rect(regex.getX()-2, regex.getY()+3, regex.getWidth()+3, regex.getHeight()-4);
-  regex.parent(stage);
-
   x_inc = x+box_size_x*4+box_padding_x*0.5;
   for (let i = 0; i < text.length; i++)
   {
@@ -540,4 +510,45 @@ function restage(ribosome_pos)
     
     su_large.setPosition(su_large.getX()+ribosome_width, su_large.getY());
     su_small.setPosition(su_small.getX()+ribosome_width, su_small.getY());
+}
+
+function getRegex()
+{
+  const re = RegExp("(AUG){1}([A|C|U|G]{3})*(UAG|UAA|UGA){1}");
+  rnaInput = document.getElementById("rnaInput").value;
+
+  match = rnaInput.match(re);
+  if (match != null) {
+    const indexOfFirst = rnaInput.indexOf(match);
+    var regex = acgraph.text(20, 20).htmlText(rnaInput.slice(0,indexOfFirst-1)
+                                               +"<b>"+match[0]
+                                               +"</b>"+rnaInput.slice(indexOfFirst+match[0].length,-1));
+  }
+  else {
+    var regex = acgraph.text(20, 20).htmlText(rnaInput);
+  }
+
+  regex.fontSize("24px");
+  regex_bounding_box = stage2.rect(regex.getX()-2, regex.getY()+3, regex.getWidth()+3, regex.getHeight()-4);
+  regex.parent(stage2);
+
+  return regex;
+}
+
+getRegex();
+
+function setImages(state)
+{
+  for (let i = 0; i < images.length; i++) 
+  {
+    if (i == state)
+    {
+      console.log("State (image): ", i);
+      images[i].parent(stage2);
+    }
+    else
+    {
+      images[i].parent(null);
+    }
+  }
 }
