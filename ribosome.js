@@ -591,8 +591,8 @@ function createSequence(text)
 
 function reset()
 {
-  su_large.setPosition(x-box_padding_x/2, y-(box_size_y*6+box_padding_y));
-  su_small.setPosition(x-box_padding_x/2, y-box_padding_y/2);
+  su_large.setPosition(x, y-su_large_height);
+  su_small.setPosition(x, y+su_small_height+box_padding_y);
   mRNAs.forEach(item => item.remove());
   mRNATexts.forEach(item => item.remove());
   linePaths.forEach(item => item.remove());
@@ -615,14 +615,6 @@ function reset()
 
   d = document.getElementById("scrollDiv");
   d.scrollTo(0,0);
-}
-
-function restage(ribosome_pos)
-{
-    myRibosome.reset();
-    
-    su_large.setPosition(su_large.getX()+ribosome_width, su_large.getY());
-    su_small.setPosition(su_small.getX()+ribosome_width, su_small.getY());
 }
 
 function getRegex()
