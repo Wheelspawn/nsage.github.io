@@ -6,7 +6,7 @@ var stage2 = acgraph.create('scrollDiv2');
 
 window.innerHeight = window.innerHeight * 0.55;
 stage.resize(window.innerWidth*0.9, window.innerHeight*0.35);
-stage2.resize(window.innerWidth*0.9, window.innerHeight*0.75);
+stage2.resize(window.innerWidth*0.9, window.innerHeight*0.55);
 
 scaling_const = 1;
 
@@ -171,11 +171,11 @@ var su_small = acgraph.vector.primitives.roundedRect(stage, rect2, 6);
 su_large.fill("#FFE2DE");
 su_small.fill("#FFE2DE");
 
-var before_init = acgraph.image('before_init.png', 10, 10, 550, 257);
-var at_init = acgraph.image('at_init.png',  10, 10, 550, 257);
-var read_frame = acgraph.image('read_frame.png',  10, 10, 550, 257);
-var stop = acgraph.image('stop.png', 10, 10, 550, 257);
-var release = acgraph.image('stop.png', 10, 10, 550, 257);
+var before_init = acgraph.image('before_init.png', 10, 36, 459, 160);
+var at_init = acgraph.image('at_init.png',  10, 36, 459, 160);
+var read_frame = acgraph.image('read_frame.png',  10, 36, 459, 160);
+var stop = acgraph.image('stop.png', 10, 36, 459, 160);
+var release = acgraph.image('stop.png', 10, 36, 459, 160);
 
 var images = [before_init, at_init, read_frame, stop, release];
 
@@ -312,6 +312,15 @@ function enterButtonClick() {
 function backwardButtonClick() {
   if (myRibosome.pos > 0)
   {
+    if (su_small.getX()+su_small_width < window.innerWidth*0.9)
+    {
+      // stage.resize(window.innerWidth*0.9, window.innerHeight*0.9);
+      console.log(document.body.clientWidth);
+      d = document.getElementById("scrollDiv");
+      d.scrollTo((su_small.getX()-(su_small_width*2+box_padding_x*3))-d.clientWidth,0);
+      // window.scrollTo(30,0); // su_small.getX()+ribosome_width)-window.innerWidth,0);
+    }
+
     if (myRibosome.state == RibosomeState.BEFORE_START_CODON ||
         myRibosome.state == RibosomeState.AT_START_CODON)
     {
@@ -350,6 +359,15 @@ function forwardButtonClick() {
   if (myRibosome.pos < codons.length-1)
   {
     myRibosome.moveForward();
+
+    if (su_small.getX()+su_small_width > window.innerWidth*0.9)
+    {
+      // stage.resize(window.innerWidth*0.9, window.innerHeight*0.9);
+      console.log(document.body.clientWidth);
+      d = document.getElementById("scrollDiv");
+      d.scrollTo((su_small.getX()+su_small_width*2+box_padding_x*3)-d.clientWidth,0);
+      // window.scrollTo(30,0); // su_small.getX()+ribosome_width)-window.innerWidth,0);
+    }
 
     if (myRibosome.state == RibosomeState.BEFORE_START_CODON)
     {
@@ -627,12 +645,12 @@ function getRegex()
   match = rnaInput.match(re);
   if (match != null) {
     const indexOfFirst = rnaInput.indexOf(match);
-    var regex = acgraph.text(20, 20).htmlText(rnaInput.slice(0,indexOfFirst-1)
+    var regex = acgraph.text(18, 10).htmlText(rnaInput.slice(0,indexOfFirst-1)
                                                +"<b>"+match[0]
                                                +"</b>"+rnaInput.slice(indexOfFirst+match[0].length,-1));
   }
   else {
-    var regex = acgraph.text(20, 20).htmlText(rnaInput);
+    var regex = acgraph.text(18, 10).htmlText(rnaInput);
   }
 
   regex.fontSize("24px");
