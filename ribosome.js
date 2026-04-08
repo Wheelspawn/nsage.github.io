@@ -155,10 +155,10 @@ var before_start_codon = false;
 var at_start_codon = false;
 var after_start_codon = false;
 
-var su_large_width = 150;
+var su_large_width = 450;
 var su_large_height = box_size_y*2+box_padding_x*2;
 
-var su_small_width = 150;
+var su_small_width = 450;
 var su_small_height = 50;
 
 var ribosome_width = 150;
@@ -192,7 +192,7 @@ class Ribosome {
   {
     this.state = RibosomeState.BEFORE_START_CODON;
     this.states = [];
-    this.pos = 0;
+    this.pos = -1;
     this.ribosome_width = box_size_x*3+box_padding_x*3;
   }
 
@@ -227,8 +227,7 @@ class Ribosome {
   {
     var input = codons[this.pos];
 
-    console.log("pos: ", this.pos);
-    console.log("input: ", input);
+    // console.log("Old state: ", this.state);
 
     if (this.state == RibosomeState.BEFORE_START_CODON)
     {
@@ -260,15 +259,14 @@ class Ribosome {
       this.state = RibosomeState.AFTER_STOP_CODON
     }
 
+    // console.log("New state: ", this.state);
     this.states.push(this.state);
     setImages(this.state);
-
-    console.log("states:" , this.state);
   }
 
   moveForward()
   {
-    if (this.pos < codons.length-1)
+    if (this.pos < codons.length)
     {
       this.pos += 1;
       
@@ -279,14 +277,13 @@ class Ribosome {
 
   moveBackward()
   {
-    if (this.pos > 0)
+    if (this.pos >= 0)
     {
       this.pos -= 1;
       
       // set the state of the ribosome relative to the start and stop codons
       this.states.pop();
       this.state = this.states[this.states.length-1];
-      console.log("reversed state: ", this.state);
       setImages(this.state);
       // this.setState();
     }
@@ -294,7 +291,7 @@ class Ribosome {
 
   reset()
   {
-    this.pos = 0;
+    this.pos = -1;
     this.state = RibosomeState.BEFORE_START_CODON;
   }
 }
@@ -310,16 +307,10 @@ function enterButtonClick() {
 }
 
 function backwardButtonClick() {
-  if (myRibosome.pos > 0)
+
+  if (myRibosome.pos >= 0)
   {
-    if (su_small.getX()+su_small_width < window.innerWidth*0.9)
-    {
-      // stage.resize(window.innerWidth*0.9, window.innerHeight*0.9);
-      console.log(document.body.clientWidth);
-      d = document.getElementById("scrollDiv");
-      d.scrollTo((su_small.getX()-(su_small_width*2+box_padding_x*3))-d.clientWidth,0);
-      // window.scrollTo(30,0); // su_small.getX()+ribosome_width)-window.innerWidth,0);
-    }
+    console.log("Current state: ", myRibosome.state);
 
     if (myRibosome.state == RibosomeState.BEFORE_START_CODON ||
         myRibosome.state == RibosomeState.AT_START_CODON)
@@ -329,22 +320,27 @@ function backwardButtonClick() {
       su_small.setPosition(su_small.getX()-ribosome_width, su_small.getY());
       myRibosome.moveBackward();
     }
-    else if (myRibosome.state == RibosomeState.AT_STOP_CODON)
-    {
-      popAminoAcid();
-      su_large.setPosition(su_large.getX()-ribosome_width, su_large.getY());
-      su_small.setPosition(su_small.getX()-ribosome_width, su_small.getY());
-      myRibosome.moveBackward();
-      replaceLigase();
-    }
     else if (myRibosome.state == RibosomeState.AFTER_START_CODON)
     {
       popAminoAcid();
       su_large.setPosition(su_large.getX()-ribosome_width, su_large.getY());
       su_small.setPosition(su_small.getX()-ribosome_width, su_small.getY());
       myRibosome.moveBackward();
-      if (myRibosome.state == RibosomeState.AFTER_START_CODON)
+      if (myRibosome.state == RibosomeState.AT_START_CODON)
+      {
+        ligases.pop();
+      }
+      else
+      {
         replaceLigase();
+      }
+    }
+    else if (myRibosome.state == RibosomeState.AT_STOP_CODON)
+    {
+      su_large.setPosition(su_large.getX()-ribosome_width, su_large.getY());
+      su_small.setPosition(su_small.getX()-ribosome_width, su_small.getY());
+      myRibosome.moveBackward();
+      replaceLigase();
     }
     else if (myRibosome.state == RibosomeState.AFTER_STOP_CODON)
     {
@@ -352,22 +348,27 @@ function backwardButtonClick() {
       su_small.setPosition(su_small.getX(), su_small.getY()-(su_small_height+box_padding_y));
       myRibosome.moveBackward();
     }
+    // console.log("New state: ", myRibosome.state);
+  }
+
+  d = document.getElementById("scrollDiv");
+  if (su_small.getX() < d.scrollLeft)
+  {
+    console.log(document.body.clientWidth);
+    d.scrollTo(su_small.getX()-1, 0);
   }
 }
 
 function forwardButtonClick() {
-  if (myRibosome.pos < codons.length-1)
+
+  if (myRibosome.state == RibosomeState.AFTER_STOP_CODON)
+  {
+    return;
+  }
+
+  if (myRibosome.pos < codons.length)
   {
     myRibosome.moveForward();
-
-    if (su_small.getX()+su_small_width > window.innerWidth*0.9)
-    {
-      // stage.resize(window.innerWidth*0.9, window.innerHeight*0.9);
-      console.log(document.body.clientWidth);
-      d = document.getElementById("scrollDiv");
-      d.scrollTo((su_small.getX()+su_small_width*2+box_padding_x*3)-d.clientWidth,0);
-      // window.scrollTo(30,0); // su_small.getX()+ribosome_width)-window.innerWidth,0);
-    }
 
     if (myRibosome.state == RibosomeState.BEFORE_START_CODON)
     {
@@ -392,100 +393,25 @@ function forwardButtonClick() {
     }
     else if (myRibosome.state == RibosomeState.AT_STOP_CODON)
     {
-      advanceLigases();
-      pushAminoAcid();
-
       su_large.setPosition(su_large.getX()+ribosome_width, su_large.getY());
       su_small.setPosition(su_small.getX()+ribosome_width, su_small.getY());
+      advanceLigases(true);
+
+      // su_large.setPosition(su_large.getX()+ribosome_width, su_large.getY());
+      // su_small.setPosition(su_small.getX()+ribosome_width, su_small.getY());
     }
     else if (myRibosome.state == RibosomeState.AFTER_STOP_CODON)
     {
       su_large.setPosition(su_large.getX(), su_large.getY()-su_large_height*2);
       su_small.setPosition(su_small.getX(), su_small.getY()+su_small_height+box_padding_y);
-      return;
-    }
-  }
-  /*
-  if (myRibosome.pos < codons.length-1)
-  {
-    myRibosome.moveForward();
-    
-    // set the state of the ribosome relative to the start and stop codons
-    
-    if (myRibosome.state == RibosomeState.AFTER_STOP_CODON)
-    {
-      su_large.setPosition(su_large.getX(), su_large.getY()-su_large_height);
-      su_small.setPosition(su_small.getX(), su_small.getY()+su_small_height+box_padding_y);
-      return;
-    }
-    else
-    {
-      su_large.setPosition(su_large.getX()+ribosome_width, su_large.getY());
-      su_small.setPosition(su_small.getX()+ribosome_width, su_small.getY());
     }
 
-    if (su_small.getX()+su_small_width > window.innerWidth*0.9)
+    d = document.getElementById("scrollDiv");
+    if (su_small.getX()+su_small_width > d.scrollLeft+d.clientWidth)
     {
-      // stage.resize(window.innerWidth*0.9, window.innerHeight*0.9);
-      console.log(document.body.clientWidth);
-      d = document.getElementById("scrollDiv");
-      d.scrollTo((su_small.getX()+su_small_width+11)-d.clientWidth,0);
-      // window.scrollTo(30,0); // su_small.getX()+ribosome_width)-window.innerWidth,0);
-    }
-    
-    if (myRibosome.pos > 0 && (ligases.length > 0 || !before_start_codon))
-    {
-      var ligase = acgraph.rect(mRNAs[myRibosome.pos*3+1].getX(), mRNAs[myRibosome.pos*3+1].getY()-su_large_height, box_size_x, box_size_y*2);
-      ligase.parent(stage);
-      ligase.fill("#DDDDDD");
-      ligases.push(ligase);
-      
-      // make the ligase look like as if it is detaching from the mRNA and amino acid
-      if (ligases.length == 3)
-      {
-        ligases[0].remove();
-        ligases.shift();
-      }
-      
-      var amino_acid = acgraph.rect(mRNAs[myRibosome.pos*3+1].getX()-box_size_x/2,
-                                    mRNAs[myRibosome.pos*3+1].getY()-(su_large_height*2),
-                                    amino_acid_box_size_x, amino_acid_box_size_y);
-      amino_acid.parent(stage);
-      
-      if (codons[myRibosome.pos] in codon_mappings)
-      {
-        var amino_acid_text = stage.text(amino_acid.getX()+box_padding_x,
-                                         amino_acid.getY()+box_padding_y,
-                                         codon_mappings[codons[myRibosome.pos]],
-                                         {fontSize: '15px'});
-      }
-      else
-      {
-        var amino_acid_text = stage.text(amino_acid.getX()+box_padding_x,
-                                         amino_acid.getY()+box_padding_y,
-                                         "?",
-                                         {fontSize: '15px'});
-      }
-      
-      amino_acid.fill("#" + rna_colors[codons[myRibosome.pos].substring(0,1)].substring(1,3)
-                          + rna_colors[codons[myRibosome.pos].substring(1,2)].substring(3,5)
-                          + rna_colors[codons[myRibosome.pos].substring(2,3)].substring(5,7))
-      amino_acids.push(amino_acid);
-      amino_acid_texts.push(amino_acid_text);
-      
-      if (amino_acids.length >= 2)
-      {
-        var link = acgraph.path();
-        link.parent(stage);
-        link.moveTo(amino_acid.getX()-(amino_acid_box_size_x-amino_acid_box_padding_x), amino_acid.getY()+box_size_y);
-        link.lineTo(amino_acid.getX(), amino_acid.getY()+box_size_y);
-        link.close();
-        
-        amino_acid_links.push(link);
-      }
+      d.scrollTo((su_small.getX()+su_small_width+1)-d.clientWidth,0);
     }
   }
-    */
 }
 
 function popAminoAcid()
@@ -499,7 +425,6 @@ function popAminoAcid()
   if (amino_acid_links.length > 0)
     amino_acid_links[amino_acid_links.length-1].remove();
 
-  ligases.pop();
   amino_acids.pop();
   amino_acid_texts.pop();
   amino_acid_links.pop();
@@ -511,14 +436,24 @@ function replaceLigase()
   ligase.parent(stage);
   ligase.fill("#DDDDDD");
   ligases.unshift(ligase);
+  ligases[ligases.length-1].remove();
+  ligases.pop();
+  // ligases[ligases.length-1].remove();
 }
 
-function advanceLigases()
+function advanceLigases(terminate=false)
 {
   var ligase = acgraph.rect(mRNAs[myRibosome.pos*3+1].getX(), mRNAs[myRibosome.pos*3+1].getY()-su_large_height, box_size_x, box_size_y*2);
 
   ligase.parent(stage);
-  ligase.fill("#DDDDDD");
+  if (!terminate)
+  {
+    ligase.fill("#DDDDDD");
+  }
+  else
+  {
+    ligase.fill("#7e2f2f");
+  }
   ligases.push(ligase);
 
   if (ligases.length == 3)
@@ -571,8 +506,8 @@ function pushAminoAcid()
 }
 function createSequence(text)
 {
-  x_inc = x;
-  for (let i = 0; i < text.length; i++)
+  x_inc = x+su_small_width*(2/3);
+  for (let i = 0; i < text.length - text.length%3; i++)
   {
     var rectangle = acgraph.rect(x_inc+box_padding_x, y+box_padding_y, box_size_x, box_size_y);
     rectangle.parent(stage);
@@ -607,6 +542,8 @@ function createSequence(text)
   stage.resize(rectangle.getX()+box_size_x+box_padding_x, window.innerHeight*0.9);  
   
   myRibosome.setState();
+
+  console.log("getX: ", su_small.getX());
 }
 
 function reset()
@@ -668,7 +605,6 @@ function setImages(state)
   {
     if (i == state)
     {
-      console.log("State (image): ", i);
       images[i].parent(stage2);
     }
     else
