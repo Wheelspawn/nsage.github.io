@@ -13,7 +13,7 @@ body {
 
 .box {
   width: 100%;
-  background-color: rgb(255, 255, 255);
+  background-color: rgb(210, 210, 210);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -52,6 +52,25 @@ section {
 
 .form-row label {
   margin-right: 1rem;
+}
+
+footer {
+  background: black;
+  border-top: 1px solid rgb(210, 210, 210);
+  width: 100%;
+  position: relative;
+  margin-top: calc(5vh - 3px);
+}
+
+@media screen and (width >= height) {
+  footer {
+    background: rgb(255, 0, 0)
+  }
+}
+
+footer p {
+  margin-left: 0rem;
+  padding-left: 1rem;
 }
 
 .grid {
@@ -121,7 +140,7 @@ h2 {
 
 html {
   background-color:black;
-  color: white;
+  color: rgb(210, 210, 210);
   height: 100%;
 }
 
@@ -130,13 +149,13 @@ input[type="text"], input[type="email"], textarea {
 }
 
 #message {
-  height: 160px;
+  height: 120px;
   resize: none;
 }
 
 input[type="submit"] {
   background-color: #000;
-  color: #FFF;
+  color: rgb(210, 210, 210);
   text-transform: uppercase;
   border: none;
   padding: 0.5rem 1rem;
@@ -154,21 +173,16 @@ input[type="submit"]:hover {
 .layout {
   position: relative;
   top: 10vh;
-  min-height: 90vh;
+  min-height: 85vh;
+  padding-bottom: 5vh;
   display: flex;
   background-color: black;
 }
 
 #leftvoid, #rightvoid {
-  display: flex;
   width: 20vw;
-  border-left: 1px solid white;
-  border-right: 1px solid white;
-}
-
-#leftcol, #rightcol {
-  display: flex;
-  width: 10vw;
+  border-left: 1px solid rgb(210, 210, 210);
+  border-right: 1px solid rgb(210, 210, 210);
 }
 
 #leftcanvas, #rightcanvas {
@@ -182,13 +196,13 @@ input[type="submit"]:hover {
   width: 100%;
   z-index: 100;
   width: 100vw;
-  height: 10vh;
+  min-height: 10vh;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   flex-direction: row;
   background: black;
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid rgb(210, 210, 210);
 }
 
 .nav-left {
@@ -226,7 +240,7 @@ p a:hover {
 
 ::selection {
     background: #8800ff;
-    color: white;
+    color: rgb(210, 210, 210);
 }
 
 .tab {
