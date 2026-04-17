@@ -188,6 +188,7 @@ input[type="submit"]:hover {
 
 #leftcanvas, #rightcanvas {
   width: 10vw;
+  max-width: 120px;
   image-rendering: pixelated;
   background: #000;
 }
